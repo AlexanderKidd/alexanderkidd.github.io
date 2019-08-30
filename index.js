@@ -240,6 +240,10 @@ function startFactCheck() {
       url: urlToCheck,
       dataType: "html",
       crossDomain: true,
+      xhrFields: {
+        withCredentials: true
+      },
+      data: data,
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
