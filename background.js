@@ -13,6 +13,8 @@
  * factual based on a common information source.
  */
 
+self.importScripts('compromise.min.js');
+
 var scrapedText; // Scraped text from the page to analyze.
 var pageKeyWords; // Used for Google search function on popup.html.
 var pageWideResults; // Text of source database query based on <title> keywords.
@@ -250,26 +252,26 @@ worker3.addEventListener('message', function(e) {
 /*
  * Listens for the content.js scrape of textual data.
  */
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if(request.newCheck == true) {
-      url = request.url;
-      alreadyChecking = false;
-    }
-    else {
-      if(request.url == url && !alreadyChecking) {
-        num = 0;
-        den = 0;
-        scrapedText = request.data;
-        pageKeyWords = request.tags;
-        factoids = sentenceParse();
-        factRecord = factoids ? ['0'.repeat(factoids.length)] : [];
-        alreadyChecking = true;
+self.addEventListener('message',
+  function(contentScrape) {
+   if(contentScrape.newCheck == true) {
+     url = contentScrape.url;
+     alreadyChecking = false;
+   }
+   else if(contentScrape.pollRequest) {
+     self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords } });
+   }
+   else {
+     if(contentScrape.url == url && !alreadyChecking) {
+       num = 0;
+       den = 0;
+       scrapedText = contentScrape.data;
+       pageKeyWords = contentScrape.tags;
+       factoids = sentenceParse();
+       factRecord = factoids ? ['0'.repeat(factoids.length)] : [];
+       alreadyChecking = true;
 
-        if(factoids && factoids.length > 0) verifyFactoids(factoids);
-      }
-    }
-
-    // Mainly so Chrome doesn't complain the sender didn't receive a response.
-    sendResponse({result: true});
-});
+       if(factoids && factoids.length > 0) verifyFactoids(factoids);
+     }
+   }
+}, false);

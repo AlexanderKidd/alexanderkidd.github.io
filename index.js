@@ -26,43 +26,48 @@ var loadArcSize = degreesToRadians(45);
 var loadStartAngle = 0;
 var loadInc = 0;
 
+var bgWorker = new Worker('background.js');
+
 /*
  * Pulls in the results once per popup window load from background.js script.
  * Currently, calculates the percentage of "correct" (verified) factoids to total factoids.
  */
 function pollFactData() {
-  var bg = chrome.extension.getBackgroundPage();
+  bgWorker.postMessage({"pollRequest" : true});
+}
 
-  if(bg) {
-    url = bg.url;
-    parsedData = bg.factoids;
-    factRecord = bg.factRecord;
-    keyWords = bg.pageKeyWords;
+self.addEventListener('message',
+  function(bg) {
+    if(bg) {
+      url = bg.url;
+      parsedData = bg.factoids;
+      factRecord = bg.factRecord;
+      keyWords = bg.pageKeyWords;
 
-    // Default error if data could not be scraped or no data.
-    if(bg.scrapedText == "") {
-      clearInterval(buildUIInterval);
-      clearInterval(pollInterval);
+      // Default error if data could not be scraped or no data.
+      if(bg.scrapedText == "") {
+        clearInterval(buildUIInterval);
+        clearInterval(pollInterval);
 
-      $('#factoidl_icon').hide();
-      $('#check_button').hide();
-      $('#myCanvas').hide();
-      $('#fact_num').hide();
-      $('#links').hide();
-      $('#facts').hide();
-      document.getElementById("fact_text").style.color="#AD0000";
-      document.getElementById("fact_text").innerHTML = "No content found.<br><br>Try refreshing the page.";
-    }
-    else {
-      if(bg.factoids) {
-        if(bg.factoids.length == bg.den) {
-          totalFactoids = bg.den;
-          factPct = bg.num / bg.den;
+        $('#factoidl_icon').hide();
+        $('#check_button').hide();
+        $('#myCanvas').hide();
+        $('#fact_num').hide();
+        $('#links').hide();
+        $('#facts').hide();
+        document.getElementById("fact_text").style.color="#AD0000";
+        document.getElementById("fact_text").innerHTML = "No content found.<br><br>Try refreshing the page.";
+      }
+      else {
+        if(bg.factoids) {
+          if(bg.factoids.length == bg.den) {
+            totalFactoids = bg.den;
+            factPct = bg.num / bg.den;
+          }
         }
       }
     }
-  }
-}
+}, false);
 
 /*
  * Converts degrees to radians.
@@ -227,27 +232,39 @@ function buildUI() {
  * and refreshing the UI.
  */
 function startFactCheck() {
-  chrome.tabs.query({active:true, lastFocusedWindow:true}, function(tabArray) {
-    if(tabArray && tabArray.length > 0) {
-      chrome.runtime.sendMessage({newCheck: true, url: tabArray[0].url},
-        function (response) {
-           chrome.tabs.executeScript({file: "jquery-1.11.3.min.js"}, function() {
-             chrome.tabs.executeScript({file: "content.js"});
-           });
-        });
-    }
-  });
+  var urlToCheck = document.getElementById('url_box').value;
 
+  if(urlToCheck != url) {
+    $.ajax({
+      type: "GET",
+      url: urlToCheck,
+      dataType: "html",
+      async: true,
+      success: function (html) {
+        var contentParse = contentScrape(html, this.url);
 
-  // Query the background script for factoid data.  This should probably be a listener of sorts.
-  pollFactData();
-  clearInterval(pollInterval);
-  pollInterval = setInterval(pollFactData, 500);
+        // Immediately post relevant data to background.js
+        bgWorker.postMessage({"contentParse" : contentParse});
 
-  // Continuously build/update the UI as factoid data is processed.
-  buildUI();
-  clearInterval(buildUIInterval);
-  buildUIInterval = setInterval(buildUI, 250);
+        // Query the background script for factoid data.  This should probably be a listener of sorts.
+        pollFactData();
+        clearInterval(pollInterval);
+        pollInterval = setInterval(pollFactData, 500);
+
+        // Continuously build/update the UI as factoid data is processed.
+        buildUI();
+        clearInterval(buildUIInterval);
+        buildUIInterval = setInterval(buildUI, 250);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error: startFactCheck() could not get requested page to check. Message: " + error +
+        "." + "\n" + "Site: " + url);
+
+        document.getElementById("fact_text").style.color="#FF0000";
+        document.getElementById("fact_text").innerHTML = "URL Invalid.";
+      }
+    });
+  }
 }
 
 function setAnalysisUI() {
@@ -276,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
  * Called when the popup window is loaded.
  * Kicks off processing the current tab's page and building the UI.
  */
-window.onload = function displayUI() {
+document.getElementById('check_button').onlick = function displayUI() {
   pollFactData();
 
   // Skip initial screen if already processing a page.
