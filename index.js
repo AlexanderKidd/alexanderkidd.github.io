@@ -243,7 +243,6 @@ function startFactCheck() {
       xhrFields: {
         withCredentials: true
       },
-      data: data,
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
@@ -293,28 +292,3 @@ document.addEventListener('DOMContentLoaded', function() {
         startFactCheck();
     });
 });
-
-/*
- * Called when the popup window is loaded.
- * Kicks off processing the current tab's page and building the UI.
- */
-document.getElementById('check_button').onlick = function displayUI() {
-  pollFactData();
-
-  // Skip initial screen if already processing a page.
-  if(parsedData) {
-    if(parsedData.length > 0) {
-      setAnalysisUI();
-
-      // Query the background script for factoid data.  This should probably be a listener of sorts.
-      pollFactData();
-      clearInterval(pollInterval);
-      pollInterval = setInterval(pollFactData, 500);
-
-      // Continuously build/update the UI as factoid data is processed.
-      buildUI();
-      clearInterval(buildUIInterval);
-      buildUIInterval = setInterval(buildUI, 250);
-    }
-  }
-};
