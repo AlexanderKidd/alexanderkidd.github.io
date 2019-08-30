@@ -238,7 +238,7 @@ function startFactCheck() {
     $.ajax({
       type: "GET",
       url: urlToCheck,
-      dataType: "html",
+      dataType: "text",
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
