@@ -238,7 +238,8 @@ function startFactCheck() {
     $.ajax({
       type: "GET",
       url: urlToCheck,
-      dataType: "text",
+      dataType: "html",
+      crossDomain: true,
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
@@ -261,7 +262,7 @@ function startFactCheck() {
         "." + "\n" + "Site: " + url);
 
         document.getElementById("fact_text").style.color="#FF0000";
-        document.getElementById("fact_text").innerHTML = "URL Invalid.";
+        document.getElementById("fact_text").innerHTML = "404 Page Not Found.<br><br>URL Invalid or Site Is Offline.";
       }
     });
   }
