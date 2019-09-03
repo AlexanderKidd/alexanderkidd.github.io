@@ -242,7 +242,10 @@ function startFactCheck() {
       xhrFields: {
         withCredentials: true
       },
-      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Access-Control-Allow-Origin': '*'
+      },
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
