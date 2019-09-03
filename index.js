@@ -239,10 +239,10 @@ function startFactCheck() {
       type: "GET",
       url: urlToCheck,
       dataType: "html",
-      crossDomain: true,
       xhrFields: {
         withCredentials: true
       },
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
       async: true,
       success: function (html) {
         var contentParse = contentScrape(html, this.url);
