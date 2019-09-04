@@ -239,6 +239,7 @@ function startFactCheck() {
       type: "GET",
       url: urlToCheck,
       dataType: "html",
+      crossDomain: false,
       xhrFields: {
         withCredentials: true
       },
