@@ -235,7 +235,7 @@ function startFactCheck() {
   var urlToCheck = document.getElementById('url_box').value;
 
   if(urlToCheck != url) {
-    $("#loadedPage").loaded(urlToCheck, function() {
+    $("#loadedPage").load(urlToCheck, function() {
       var contentParse = contentScrape(html, this.url);
 
       // Immediately post relevant data to background.js
