@@ -239,9 +239,6 @@ function startFactCheck() {
       type: "GET",
       url: urlToCheck,
       dataType: "html",
-      xhrFields: {
-        withCredentials: true
-      },
       headers: {
         'Access-Control-Allow-Headers': 'x-requested-with, Content-Type, Authorization, Origin, Accept',
         'Access-Control-Allow-Origin': '*',
@@ -250,20 +247,23 @@ function startFactCheck() {
       },
       async: true,
       success: function (html) {
-        var contentParse = contentScrape(html, this.url);
+        $("#loadedPage").loaded(urlToCheck, function() {
+          var contentParse = contentScrape(html, this.url);
 
-        // Immediately post relevant data to background.js
-        bgWorker.postMessage({"contentParse" : contentParse});
+          // Immediately post relevant data to background.js
+          bgWorker.postMessage({"contentParse" : contentParse});
 
-        // Query the background script for factoid data.  This should probably be a listener of sorts.
-        pollFactData();
-        clearInterval(pollInterval);
-        pollInterval = setInterval(pollFactData, 500);
+          // Query the background script for factoid data.  This should probably be a listener of sorts.
+          pollFactData();
+          clearInterval(pollInterval);
+          pollInterval = setInterval(pollFactData, 500);
 
-        // Continuously build/update the UI as factoid data is processed.
-        buildUI();
-        clearInterval(buildUIInterval);
-        buildUIInterval = setInterval(buildUI, 250);
+          // Continuously build/update the UI as factoid data is processed.
+          buildUI();
+          clearInterval(buildUIInterval);
+          buildUIInterval = setInterval(buildUI, 250);
+        });
+
       },
       error: function (xhr, status, error) {
         console.error("Error: startFactCheck() could not get requested page to check. Message: " + error +
