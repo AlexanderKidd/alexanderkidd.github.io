@@ -245,7 +245,8 @@ function startFactCheck() {
       headers: {
         'Access-Control-Allow-Headers': 'x-requested-with',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET'
+        'Access-Control-Allow-Methods': 'GET',
+        'X-Requested-With': 'XMLHttpRequest'
       },
       async: true,
       success: function (html) {
