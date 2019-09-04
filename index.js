@@ -243,7 +243,7 @@ function startFactCheck() {
         withCredentials: true
       },
       headers: {
-        'Access-Control-Allow-Headers': 'x-requested-with',
+        'Access-Control-Allow-Headers': 'x-requested-with, Content-Type, Authorization, Origin, Accept',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET',
         'X-Requested-With': 'XMLHttpRequest'
