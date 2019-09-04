@@ -239,13 +239,13 @@ function startFactCheck() {
       type: "GET",
       url: urlToCheck,
       dataType: "html",
-      crossDomain: false,
       xhrFields: {
         withCredentials: true
       },
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Headers': 'x-requested-with',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET'
       },
       async: true,
       success: function (html) {
