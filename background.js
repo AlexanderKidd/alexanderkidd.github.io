@@ -265,7 +265,7 @@ self.addEventListener('message',
      if(/*message.url == url &&*/ !alreadyChecking) {
        num = 0;
        den = 0;
-       scrapedText = message.data.contentScrape;
+       scrapedText = message.data.contentParse;
        pageKeyWords = message.data.tags;
        factoids = sentenceParse();
        factRecord = factoids ? ['0'.repeat(factoids.length)] : [];
