@@ -254,19 +254,19 @@ worker3.addEventListener('message', function(e) {
  */
 self.addEventListener('message',
   function(message) {
-   if(message.newCheck == true) {
+   if(message.data.newCheck == true) {
      url = contentScrape.url;
      alreadyChecking = false;
    }
-   else if(message.pollRequest == true) {
+   else if(message.data.pollRequest == true) {
      self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords } });
    }
    else {
      if(/*message.url == url &&*/ !alreadyChecking) {
        num = 0;
        den = 0;
-       scrapedText = message.data;
-       pageKeyWords = message.tags;
+       scrapedText = message.data.data;
+       pageKeyWords = message.data.tags;
        factoids = sentenceParse();
        factRecord = factoids ? ['0'.repeat(factoids.length)] : [];
        alreadyChecking = true;
