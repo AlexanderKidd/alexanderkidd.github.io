@@ -255,7 +255,7 @@ worker3.addEventListener('message', function(e) {
 self.addEventListener('message',
   function(message) {
    if(message.data.newCheck == true) {
-     url = contentScrape.url;
+     url = message.data.url;
      alreadyChecking = false;
    }
    else if(message.data.pollRequest == true) {
@@ -265,7 +265,7 @@ self.addEventListener('message',
      if(/*message.url == url &&*/ !alreadyChecking) {
        num = 0;
        den = 0;
-       scrapedText = message.data.data;
+       scrapedText = message.data.contentScrape;
        pageKeyWords = message.data.tags;
        factoids = sentenceParse();
        factRecord = factoids ? ['0'.repeat(factoids.length)] : [];

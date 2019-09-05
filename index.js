@@ -237,7 +237,7 @@ function startFactCheck() {
   var contentParse = contentScrape(factsToCheck, this.url);
 
   // Immediately post relevant data to background.js
-  bgWorker.postMessage({"contentParse" : contentParse});
+  bgWorker.postMessage({"contentParse" : contentParse.data, "tags" : contentParse.tags, "url" : contentParse.url});
 
   // Query the background script for factoid data.  This should probably be a listener of sorts.
   pollFactData();
