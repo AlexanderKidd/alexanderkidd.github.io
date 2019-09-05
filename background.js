@@ -13,6 +13,7 @@
  * factual based on a common information source.
  */
 
+self.importScripts('jquery-1.11.3.min.js');
 self.importScripts('compromise.min.js');
 
 var scrapedText; // Scraped text from the page to analyze.
