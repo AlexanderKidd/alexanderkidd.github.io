@@ -262,7 +262,7 @@ self.addEventListener('message',
      self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords } });
    }
    else {
-     if(contentScrape.url == url && !alreadyChecking) {
+     if(/*contentScrape.url == url &&*/ !alreadyChecking) {
        num = 0;
        den = 0;
        scrapedText = contentScrape.data;
