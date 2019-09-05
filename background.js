@@ -253,20 +253,20 @@ worker3.addEventListener('message', function(e) {
  * Listens for the content.js scrape of textual data.
  */
 self.addEventListener('message',
-  function(contentScrape) {
-   if(contentScrape.newCheck == true) {
+  function(message) {
+   if(message.newCheck == true) {
      url = contentScrape.url;
      alreadyChecking = false;
    }
-   else if(contentScrape.pollRequest) {
+   else if(message.pollRequest == true) {
      self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords } });
    }
    else {
-     if(/*contentScrape.url == url &&*/ !alreadyChecking) {
+     if(/*message.url == url &&*/ !alreadyChecking) {
        num = 0;
        den = 0;
-       scrapedText = contentScrape.data;
-       pageKeyWords = contentScrape.tags;
+       scrapedText = message.data;
+       pageKeyWords = message.tags;
        factoids = sentenceParse();
        factRecord = factoids ? ['0'.repeat(factoids.length)] : [];
        alreadyChecking = true;
