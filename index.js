@@ -234,7 +234,7 @@ function buildUI() {
 function startFactCheck() {
   var factsToCheck = document.getElementById('fact_box').value;
 
-  var contentParse = contentScrape(html, this.url);
+  var contentParse = contentScrape(factsToCheck, this.url);
 
   // Immediately post relevant data to background.js
   bgWorker.postMessage({"contentParse" : contentParse});
