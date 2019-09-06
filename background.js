@@ -13,26 +13,6 @@
  * factual based on a common information source.
  */
 
- var document = self.document = {parentNode: null, nodeType: 9, toString: function() {return "FakeDocument"}};
- var window = self.window = self;
- var fakeElement = Object.create(document);
- fakeElement.nodeType = 1;
- fakeElement.toString=function() {return "FakeElement"};
- fakeElement.parentNode = fakeElement.firstChild = fakeElement.lastChild = fakeElement;
- fakeElement.ownerDocument = document;
-
-document.head = document.body = fakeElement;
-document.ownerDocument = document.documentElement = document;
-document.getElementById = document.createElement = function() {return fakeElement;};
-document.createDocumentFragment = function() {return this;};
-document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
-document.getAttribute = document.setAttribute = document.removeChild =
-document.addEventListener = document.removeEventListener =
-function() {return null;};
-document.cloneNode = document.appendChild = function() {return this;};
-document.appendChild = function(child) {return child;};
-
-self.importScripts('jquery-1.11.3.min.js');
 self.importScripts('compromise.min.js');
 
 var scrapedText; // Scraped text from the page to analyze.
@@ -140,24 +120,43 @@ function queryForSources(factoid, index, callback) {
     factoidKeywords = factoidKeywords[0].split(" ").slice(0, 2);
   }
 
-  $.ajax({
-    type: "GET",
-    url: "https://en.wikipedia.org/w/api.php?action=opensearch&pslimit=2&namespace=0&format=json&search=" +
-    encodeURIComponent(factoidKeywords),
-    dataType: "json",
-    async: true,
-    success: function (json) {
-      var sourceURL = json[3] ? json[3][0] : "";
-      callback.call(this, getSources(sourceURL, factoid, index));
-    },
-    error: function (xhr, status, error) {
-      factRecord[index] = "404";
-      den++; // Still increment that a factoid was processed even with failure.
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', "https://en.wikipedia.org/w/api.php?action=opensearch&pslimit=2&namespace=0&format=json&search=" +
+  encodeURIComponent(factoidKeywords));
+  xhr.onload = function() {
+      if (xhr.status === 200) {
+          var json = JSON.parse(xhr.responseText);
+          var sourceURL = json[3] ? json[3][0] : "";
+          callback.call(this, getSources(sourceURL, factoid, index));
+      }
+  };
+  request.onerror = function() {
+  // There was a connection error of some sort
+  factRecord[index] = "404";
+  den++; // Still increment that a factoid was processed even with failure.
 
-      console.error("Error: queryForSources() article search request errored for factoid {" + factoid + "}. Message: " + error +
-      "." + "\n" + "Site: " + url);
-    }
-  });
+  console.error("Error: queryForSources() article search request errored for factoid {" + factoid + "}. Message: " + error +
+  "." + "\n" + "Site: " + url);
+  };
+
+  // $.ajax({
+  //   type: "GET",
+  //   url: "https://en.wikipedia.org/w/api.php?action=opensearch&pslimit=2&namespace=0&format=json&search=" +
+  //   encodeURIComponent(factoidKeywords),
+  //   dataType: "json",
+  //   async: true,
+  //   success: function (json) {
+  //     var sourceURL = json[3] ? json[3][0] : "";
+  //     callback.call(this, getSources(sourceURL, factoid, index));
+  //   },
+  //   error: function (xhr, status, error) {
+  //     factRecord[index] = "404";
+  //     den++; // Still increment that a factoid was processed even with failure.
+  //
+  //     console.error("Error: queryForSources() article search request errored for factoid {" + factoid + "}. Message: " + error +
+  //     "." + "\n" + "Site: " + url);
+  //   }
+  // });
 }
 
 /*
@@ -165,34 +164,64 @@ function queryForSources(factoid, index, callback) {
  * Then kicks off a comparison job for one of the web workers.
  */
 var getSources = function(sourceURL, factoid, index) {
-  $.ajax({
-    type: "GET",
-    url: sourceURL,
-    dataType: "text",
-    async: true,
-    success: function (text) {
-      if(index >= 0) {
-        if(index % 2 == 0 && index % 3 != 0) {
-          worker1.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
-        }
-        else if(index % 2 != 0 && index % 3 == 0) {
-          worker2.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
-        }
-        else {
-          worker3.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
-        }
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', sourceURL);
+  xhr.onload = function() {
+      if (xhr.status === 200) {
+          var text = xhr.responseText;
+
+          if(index >= 0) {
+            if(index % 2 == 0 && index % 3 != 0) {
+              worker1.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+            }
+            else if(index % 2 != 0 && index % 3 == 0) {
+              worker2.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+            }
+            else {
+              worker3.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+            }
+          }
+          else {
+            if(index == -1) {
+              pageWideResults = $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text();
+            }
+          }
+
       }
-      else {
-        if(index == -1) {
-          pageWideResults = $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text();
-        }
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("Error: getSources() Wiki article request errored for factoid {" + factoid + "}. Message: " + error +
-      "." + "\n" + "Site: " + url);
-    }
-  });
+  };
+  request.onerror = function() {
+    console.error("Error: getSources() Wiki article request errored for factoid {" + factoid + "}. Message: " + error +
+    "." + "\n" + "Site: " + url);
+  };
+
+  // $.ajax({
+  //   type: "GET",
+  //   url: sourceURL,
+  //   dataType: "text",
+  //   async: true,
+  //   success: function (text) {
+  //     if(index >= 0) {
+  //       if(index % 2 == 0 && index % 3 != 0) {
+  //         worker1.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+  //       }
+  //       else if(index % 2 != 0 && index % 3 == 0) {
+  //         worker2.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+  //       }
+  //       else {
+  //         worker3.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+  //       }
+  //     }
+  //     else {
+  //       if(index == -1) {
+  //         pageWideResults = $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text();
+  //       }
+  //     }
+  //   },
+  //   error: function (xhr, status, error) {
+  //     console.error("Error: getSources() Wiki article request errored for factoid {" + factoid + "}. Message: " + error +
+  //     "." + "\n" + "Site: " + url);
+  //   }
+  // });
 };
 
 /*
