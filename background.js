@@ -130,7 +130,7 @@ function queryForSources(factoid, index, callback) {
           callback.call(this, getSources(sourceURL, factoid, index));
       }
   };
-  request.onerror = function() {
+  xhr.onerror = function() {
   // There was a connection error of some sort
   factRecord[index] = "404";
   den++; // Still increment that a factoid was processed even with failure.
@@ -189,7 +189,7 @@ var getSources = function(sourceURL, factoid, index) {
 
       }
   };
-  request.onerror = function() {
+  xhr.onerror = function() {
     console.error("Error: getSources() Wiki article request errored for factoid {" + factoid + "}. Message: " + error +
     "." + "\n" + "Site: " + url);
   };
