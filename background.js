@@ -173,9 +173,9 @@ var getSources = function(sourceTerms, factoid, index) {
       if (xhr.status === 200) {
           var text = xhr.responseText;
 
-          var parser = new DOMParser();
-          var xmlDoc = parser.parseFromString(text,"text/xml");
-          var extractText = xmlDoc.getElementsByTagName("extract")[0].childNodes[0].nodeValue;
+          var tempTag = document.createElement('div');
+          var htmlDoc = tempTag.innerHTML(text);
+          var extractText = htmlDoc.getElementsByTagName("extract")[0].childNodes[0].nodeValue;
 
           if(index >= 0) {
             if(index % 2 == 0 && index % 3 != 0) {
