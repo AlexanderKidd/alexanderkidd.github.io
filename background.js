@@ -158,6 +158,8 @@ function queryForSources(factoid, index, callback) {
   //     "." + "\n" + "Site: " + url);
   //   }
   // });
+
+  xhr.send();
 }
 
 /*
@@ -188,7 +190,7 @@ var getSources = function(sourceTerms, factoid, index) {
           }
           else {
             if(index == -1) {
-              pageWideResults = $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text();
+              pageWideResults = extractText;
             }
           }
 
@@ -198,6 +200,8 @@ var getSources = function(sourceTerms, factoid, index) {
     console.error("Error: getSources() Wiki article request errored for factoid {" + factoid + "}. Message: " + error +
     "." + "\n" + "Site: " + url);
   };
+
+  xhr.send();
 
   // $.ajax({
   //   type: "GET",
