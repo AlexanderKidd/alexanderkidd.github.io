@@ -128,7 +128,7 @@ function queryForSources(factoid, index, callback) {
           var json = JSON.parse(xhr.responseText);
           var sourceURL = json[3] ? json[3][0] : "";
           var sourceSplit = sourceURL.split("/");
-          callback.call(this, getSources(sourceSplit(sourceSplit.length - 1), factoid, index));
+          callback.call(this, getSources(sourceSplit[sourceSplit.length - 1], factoid, index));
       }
   };
   xhr.onerror = function() {
