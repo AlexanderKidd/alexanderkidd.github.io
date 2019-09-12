@@ -127,7 +127,8 @@ function queryForSources(factoid, index, callback) {
       if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
           var sourceURL = json[3] ? json[3][0] : "";
-          callback.call(this, getSources(sourceURL, factoid, index));
+          var sourceSplit = sourceURL.split("/");
+          callback.call(this, getSources(sourceSplit(sourceSplit.length - 1), factoid, index));
       }
   };
   xhr.onerror = function() {
@@ -163,22 +164,26 @@ function queryForSources(factoid, index, callback) {
  * Loads the corresponding source text from the source URL for the factoid.
  * Then kicks off a comparison job for one of the web workers.
  */
-var getSources = function(sourceURL, factoid, index) {
+var getSources = function(sourceTerms, factoid, index) {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', sourceURL);
+  xhr.open('GET', "https://en.wikipedia.org/w/api.php?format=xml&action=query&prop=extracts&titles=" + sourceTerms + "&redirects=true");
   xhr.onload = function() {
       if (xhr.status === 200) {
           var text = xhr.responseText;
 
+          var parser = new DOMParser();
+          var xmlDoc = parser.parseFromString(text,"text/xml");
+          var extractText = xmlDoc.getElementsByTagName("extract")[0].childNodes[0].nodeValue;
+
           if(index >= 0) {
             if(index % 2 == 0 && index % 3 != 0) {
-              worker1.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+              worker1.postMessage({ "factoid" : factoid, "index" : index, "text" : extractText, "pageWideResults" : pageWideResults });
             }
             else if(index % 2 != 0 && index % 3 == 0) {
-              worker2.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+              worker2.postMessage({ "factoid" : factoid, "index" : index, "text" : extractText, "pageWideResults" : pageWideResults });
             }
             else {
-              worker3.postMessage({ "factoid" : factoid, "index" : index, "text" : $('p, i', $.parseHTML(text.replace(/<img\b[^>]*>/ig, '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/igm, ''))).text(), "pageWideResults" : pageWideResults });
+              worker3.postMessage({ "factoid" : factoid, "index" : index, "text" : extractText, "pageWideResults" : pageWideResults });
             }
           }
           else {
