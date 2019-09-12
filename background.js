@@ -122,7 +122,7 @@ function queryForSources(factoid, index, callback) {
 
   var xhr = new XMLHttpRequest();
   xhr.open('GET', "https://en.wikipedia.org/w/api.php?action=opensearch&pslimit=2&namespace=0&format=json&search=" +
-  encodeURIComponent(factoidKeywords));
+  encodeURIComponent(factoidKeywords) + "&origin=*");
   xhr.onload = function() {
       if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
@@ -168,7 +168,7 @@ function queryForSources(factoid, index, callback) {
  */
 var getSources = function(sourceTerms, factoid, index) {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', "https://en.wikipedia.org/w/api.php?format=xml&action=query&prop=extracts&titles=" + sourceTerms + "&redirects=true");
+  xhr.open('GET', "https://en.wikipedia.org/w/api.php?format=xml&action=query&prop=extracts&titles=" + sourceTerms + "&redirects=true&origin=*");
   xhr.onload = function() {
       if (xhr.status === 200) {
           var text = xhr.responseText;
