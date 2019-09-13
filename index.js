@@ -282,8 +282,8 @@ function setAnalysisUI() {
   url + "</span>";
 
   document.getElementById("fact_num").innerHTML = parsedData.length.toLocaleString();
-  document.getElementById("links").innerHTML = "<img border=\"0\" alt=\"Google Search\" src=\"search_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\"> Related";
-  document.getElementById("facts").innerHTML = "Factoids <img border=\"0\" alt=\"Google Search\" src=\"fact_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\">";
+  document.getElementById("links").innerHTML = "<span style=\"border-style: solid;\"><img border=\"0\" alt=\"Google Search\" src=\"search_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\"> Related</span>";
+  document.getElementById("facts").innerHTML = "<span style=\"border-style: solid;\">Factoids <img border=\"0\" alt=\"Google Search\" src=\"fact_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\"></span>";
 }
 
 document.addEventListener('DOMContentLoaded', function() {
