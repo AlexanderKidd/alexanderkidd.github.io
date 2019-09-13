@@ -11,7 +11,7 @@
  */
 
 var url = "";
-var parsedData;
+var parsedData = [];
 var factRecord;
 var totalFactoids;
 var keyWords;
@@ -36,7 +36,7 @@ function pollFactData() {
   bgWorker.postMessage({"pollRequest" : true});
 }
 
-bgWorker.onmessage = function(event) {
+bgWorker.onmessage = function(bg) {
   if(bg) {
     url = bg.url;
     parsedData = bg.factoids;
