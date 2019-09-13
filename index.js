@@ -44,7 +44,7 @@ bgWorker.onmessage = function(bg) {
     keyWords = bg.pageKeyWords;
 
     // Default error if data could not be scraped or no data.
-    if(bg.scrapedText == "") {
+    if(parsedData.length == 0) {
       clearInterval(buildUIInterval);
       clearInterval(pollInterval);
 
@@ -280,8 +280,6 @@ function setAnalysisUI() {
   document.getElementById("fact_num").innerHTML = parsedData.length.toLocaleString();
   document.getElementById("links").innerHTML = "<img border=\"0\" alt=\"Google Search\" src=\"search_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\"> Related";
   document.getElementById("facts").innerHTML = "Factoids <img border=\"0\" alt=\"Google Search\" src=\"fact_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\">";
-
-  $('#links').show();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
