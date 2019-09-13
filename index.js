@@ -273,13 +273,15 @@ function setAnalysisUI() {
   $('#myCanvas').show();
 
   document.getElementById("fact_text").style.color="#000000";
-  document.getElementById("fact_text").innerHTML = "Factoids checked at:" +
+  document.getElementById("fact_text").innerHTML = "Factoids checked:" +
   "<span id=\"current-link\" title=\"" + url + "\" style=\"display:block;width:200px;overflow:hidden;text-overflow:ellipsis;font-size:75%;\">" +
   url + "</span>";
 
   document.getElementById("fact_num").innerHTML = parsedData.length.toLocaleString();
   document.getElementById("links").innerHTML = "<img border=\"0\" alt=\"Google Search\" src=\"search_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\"> Related";
   document.getElementById("facts").innerHTML = "Factoids <img border=\"0\" alt=\"Google Search\" src=\"fact_icon_16x16.png\" width=\"16\" height=\"16\" style=\"vertical-align:-3px;\">";
+
+  $('#links').show();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
