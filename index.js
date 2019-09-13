@@ -44,7 +44,7 @@ bgWorker.onmessage = function(bg) {
     keyWords = bg.pageKeyWords;
 
     // Default error if data could not be scraped or no data.
-    if(parsedData.length == 0) {
+    if(!parsedData) {
       clearInterval(buildUIInterval);
       clearInterval(pollInterval);
 
