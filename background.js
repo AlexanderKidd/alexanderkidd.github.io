@@ -173,7 +173,7 @@ var getSources = function(sourceTerms, factoid, index) {
       if (xhr.status === 200) {
           var text = xhr.responseText;
 
-          var extractText = text.match(/<extract\b[^>]*>.*<\/extract\b[^>]*>/igs)[0].replace(/<extract\b[^>]*>/igs, '').replace(/<\/extract\b[^>]*>/igs);
+          var extractText = text.match(/<extract\b[^>]*>[^]*<\/extract\b[^>]*>/ig)[0].replace(/<extract\b[^>]*>/ig, '').replace(/<\/extract\b[^>]*>/ig, '');
 
           if(index >= 0) {
             if(index % 2 == 0 && index % 3 != 0) {

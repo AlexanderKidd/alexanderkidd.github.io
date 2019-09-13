@@ -36,38 +36,37 @@ function pollFactData() {
   bgWorker.postMessage({"pollRequest" : true});
 }
 
-self.addEventListener('message',
-  function(bg) {
-    if(bg) {
-      url = bg.url;
-      parsedData = bg.factoids;
-      factRecord = bg.factRecord;
-      keyWords = bg.pageKeyWords;
+bgWorker.onmessage = function(event) {
+  if(bg) {
+    url = bg.url;
+    parsedData = bg.factoids;
+    factRecord = bg.factRecord;
+    keyWords = bg.pageKeyWords;
 
-      // Default error if data could not be scraped or no data.
-      if(bg.scrapedText == "") {
-        clearInterval(buildUIInterval);
-        clearInterval(pollInterval);
+    // Default error if data could not be scraped or no data.
+    if(bg.scrapedText == "") {
+      clearInterval(buildUIInterval);
+      clearInterval(pollInterval);
 
-        $('#factoidl_icon').hide();
-        $('#check_button').hide();
-        $('#myCanvas').hide();
-        $('#fact_num').hide();
-        $('#links').hide();
-        $('#facts').hide();
-        document.getElementById("fact_text").style.color="#AD0000";
-        document.getElementById("fact_text").innerHTML = "No content found.<br><br>Try refreshing the page.";
-      }
-      else {
-        if(bg.factoids) {
-          if(bg.factoids.length == bg.den) {
-            totalFactoids = bg.den;
-            factPct = bg.num / bg.den;
-          }
+      $('#factoidl_icon').hide();
+      $('#check_button').hide();
+      $('#myCanvas').hide();
+      $('#fact_num').hide();
+      $('#links').hide();
+      $('#facts').hide();
+      document.getElementById("fact_text").style.color="#AD0000";
+      document.getElementById("fact_text").innerHTML = "No content found.<br><br>Try refreshing the page.";
+    }
+    else {
+      if(bg.factoids) {
+        if(bg.factoids.length == bg.den) {
+          totalFactoids = bg.den;
+          factPct = bg.num / bg.den;
         }
       }
     }
-}, false);
+  }
+};
 
 /*
  * Converts degrees to radians.
@@ -168,8 +167,6 @@ function drawPieChart() {
 function buildUI() {
   var facts = document.getElementById('facts');
 
-  if(parsedData) setAnalysisUI(); // Transition from initial screen to factoid analysis UI.
-
   drawPieChart();
 
   // Generate a list of facts so the user knows what was checked and what to disregard.
@@ -248,6 +245,8 @@ function startFactCheck() {
   buildUI();
   clearInterval(buildUIInterval);
   buildUIInterval = setInterval(buildUI, 250);
+
+  setAnalysisUI(); // Transition from initial screen to factoid analysis UI.
 
   // if(urlToCheck != url) {
   //   $.ajax({
