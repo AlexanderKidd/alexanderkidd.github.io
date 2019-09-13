@@ -36,7 +36,9 @@ function pollFactData() {
   bgWorker.postMessage({"pollRequest" : true});
 }
 
-bgWorker.onmessage = function(bg) {
+bgWorker.onmessage = function(event) {
+  var bg = event.data.bg;
+  
   if(bg) {
     url = bg.url;
     parsedData = bg.factoids;
