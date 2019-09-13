@@ -315,7 +315,7 @@ self.addEventListener('message',
      alreadyChecking = false;
    }
    else if(message.data.pollRequest == true) {
-     self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords } });
+     self.postMessage({bg : { "url" : url, "factoids" : factoids, "factRecord" : factRecord, "pageKeyWords" : pageKeyWords, "num" : num, "den" : den } });
    }
    else {
      if(/*message.url == url &&*/ !alreadyChecking) {
