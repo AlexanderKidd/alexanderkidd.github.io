@@ -38,7 +38,7 @@ function pollFactData() {
 
 bgWorker.onmessage = function(event) {
   var bg = event.data.bg;
-  
+
   if(bg) {
     url = bg.url;
     parsedData = bg.factoids;
@@ -168,6 +168,8 @@ function drawPieChart() {
  */
 function buildUI() {
   var facts = document.getElementById('facts');
+
+  document.getElementById("fact_num").innerHTML = parsedData.length.toLocaleString();
 
   drawPieChart();
 
