@@ -30,28 +30,28 @@
       <center>
         <canvas id="myCanvas" width="200" height="200" style="display: none;">
         Your browser does not support the HTML5 canvas tag.</canvas>
+
+        <div id="start_div" align="center">
+          <img id="factoidl_icon" src="factoidL_icon48.png" alt="FactoidL Icon" style="padding-bottom: 75px; padding-top: 50px;"></img>
+          <br>
+          <textarea id="fact_box" type="text" placeholder="Enter text to fact check here." style="width: 250px; height: 150px; padding: 0px"></textarea>
+          <br>
+          <br>
+          <button id="check_button" style="background:#4ED25E; border-radius: 6px; font-size: 20px;">Check Factoids</button>
+        </div>
+
+        <div id="loadedPage" style="display: none;"></div>
+
+        <h3>
+          <a href="#" id="links" target="_blank" style="padding-right: 50px; color:black; text-decoration:none;">
+            <!-- Loaded dynamically via popup script -->
+          </a>
+          <a id="facts" target="_blank" style="padding-left: 50px; color:black; text-decoration:none;cursor:pointer;">
+            <!-- Loaded dynamically via popup script -->
+          </a>
+        </h3>
+
+        <div id="factList" style="display:block;width:200px;word-wrap:break-word;"></div>
       </center>
-      
-      <div id="start_div" align="center">
-        <img id="factoidl_icon" src="factoidL_icon48.png" alt="FactoidL Icon" style="padding-bottom: 75px; padding-top: 50px;"></img>
-        <br>
-        <textarea id="fact_box" type="text" placeholder="Enter text to fact check here." style="width: 250px; height: 150px; padding: 0px"></textarea>
-        <br>
-        <br>
-        <button id="check_button" style="background:#4ED25E; border-radius: 6px; font-size: 20px;">Check Factoids</button>
-      </div>
-
-      <div id="loadedPage" style="display: none;"></div>
-
-      <h3>
-        <a href="#" id="links" target="_blank" style="color:black;text-decoration:none;">
-          <!-- Loaded dynamically via popup script -->
-        </a>
-        <a id="facts" target="_blank" style="color:black;text-decoration:none;float:right;cursor:pointer;">
-          <!-- Loaded dynamically via popup script -->
-        </a>
-      </h3>
-
-      <div id="factList" style="display:block;width:200px;word-wrap:break-word;"></div>
     </body>
 </html>
