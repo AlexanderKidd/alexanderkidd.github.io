@@ -8,7 +8,7 @@
  */
 
 function contentScrape(html, urlScraped) {
-  var page = $(html);
+  var page = $("<p>" + html + "<p>");
   
   // Blacklist (remove) content that probably doesn't need to be checked, like dateline and byline classes (i.e., visible plaintext).
   // Decided against a whitelist since some sites have custom tags that are completely valid (e.g., <article>).
@@ -36,36 +36,8 @@ function contentScrape(html, urlScraped) {
     scrapedText += ' ';
   });
   
-  // The page title is usually brief enough for a related article search, otherwise try the first factoid.
-  var keyWords = $('title', page).text();
-  
-  if(keyWords.includes(" - ")) {
-    var tempTitle = keyWords.split(" - ");
-    if(tempTitle[0].length > tempTitle[1].length) {
-      keyWords = tempTitle[0];
-    }
-    else {
-      keyWords = tempTitle[1];
-    }
-  }
-  else if(keyWords.includes(" | ")) {
-    var tempTitle = keyWords.split(" | ");
-    if(tempTitle[0].length > tempTitle[1].length) {
-      keyWords = tempTitle[0];
-    }
-    else {
-      keyWords = tempTitle[1];
-    }
-  }
-  
-  if(!keyWords) {
-  	if(scrapedText.indexOf('.') != -1) {
-  		keyWords = scrapedText.substring(0, scrapedText.indexOf('.'));
-  	}
-  	else {
-  		keyWords = "No keywords found. Need page title or page text.";
-  	}
-  }
+  // No page title to pull, return all scrapedText and have getKeywords() handle it.
+  var keyWords = scrapedText;
 
   // Get the URL of the page being scraped.
   var url = urlScraped;
